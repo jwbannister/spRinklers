@@ -21,3 +21,17 @@ recode_variables <- function(df_in, group, server, layer){
   }
   df_in
 }
+
+#' Assign points to a sprinkler area
+assign_points <- function(points_vec, poly_df=sprinkler_polygons){
+  objs <- data.frame(objectid=unique(poly_df$objectid))
+  xwalk <- dplyr::left_join(objs, select(poly_df, area, objectid), 
+                             by="objectid")
+  for (j in objs$objectid){
+    polycheck <- sp::point.in.polygon(points_vec[1], points_vec[2], 
+                                      dplyr::filter(poly_df, objectid==j)$x, 
+                                      dplyr::filter(poly_df, objectid==j)$y)
+    if (polycheck==1) return(filter(xwalk, objectid==j)$area[1]) 
+  }
+  return(NA)
+}
