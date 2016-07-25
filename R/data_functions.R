@@ -8,7 +8,7 @@
 #' @param server Text string. The desired server in the group.
 #' @param layer Integer. The number of the desired layer in the server. (Layer 
 #' numbers begin with 0)
-recode_variables <- function(df_in, group, server, layer){
+recode_variables_AGOL <- function(df_in, group, server, layer){
   meta <- query_AGOL_json(group, server, layer)
   meta_codes <- meta$fields$domain$codedValues
   recode <- function(x, codes){
@@ -21,6 +21,25 @@ recode_variables <- function(df_in, group, server, layer){
   }
   df_in
 }
+
+#' Assign text descriptions to factor values from AWS tables.
+recode_variable_AWS <- function(df_in, variable){
+  plural <- ifelse(substring(variable, nchar(variable)-1)=="ss", 
+                   paste0(variable, "es"), paste0(variable, "s"))
+  plural <- ifelse(variable %in% c("efforescence", "free_sand"), 
+                   "presences", plural)
+  plural <- ifelse(variable=="stability", "stabilities", plural)
+  query1 <- paste0("SELECT * FROM field_data.", plural, ";")
+  xwalk <- query_owens_aws(query1)
+  recode <- function(x){
+    ifelse(!is.na(x), xwalk[xwalk[ , 1]==x, 2], x)
+  }
+  df_in[ , paste0(variable, "_id")] <- 
+    sapply(df_in[ , paste0(variable, "_id")], recode)
+  df_in
+}
+
+
 
 #' Assign points to a sprinkler area
 assign_points <- function(points_vec, poly_df=sprinkler_polygons){
