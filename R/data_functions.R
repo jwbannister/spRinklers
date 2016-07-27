@@ -54,3 +54,47 @@ assign_points <- function(points_vec, poly_df=sprinkler_polygons){
   }
   return(NA)
 }
+
+assign_areas_df <- function(df_in){
+  df_in$area <- sapply(mapply(c, coordinates(df_in)[ , "x"], 
+                                 coordinates(df_in)[ , "y"], SIMPLIFY=F), 
+                          assign_points)
+  df_in
+}
+
+create_dist_matrix <- function(df1, df2, df1_xy_cols, df2_xy_cols, df1_labels,
+                               df2_labels){
+  mat <- matrix(data=NA, nrow=nrow(df1), ncol=nrow(df2), 
+                dimnames=list(df1[ , df1_labels], df2[ , df2_labels]))
+  df1_x <- df1[ , df1_xy_cols[1]]
+  df1_y <- df1[ , df1_xy_cols[2]]
+  df2_x <- df2[ , df2_xy_cols[1]]
+  df2_y <- df2[ , df2_xy_cols[2]]
+  for (i in 1:ncol(mat)){
+    dist_vect <- c()
+    for (j in 1:nrow(mat)){
+      dist_vect[j] <- sqrt((df1_x[j] - df2_x[i])^2 + (df1_y[j] - df2_y[i])^2) 
+    }
+    mat[ , i] <- dist_vect
+  }
+  mat
+}
+
+create_dist_matrix <- function(df1, df2, df1_xy_cols, df2_xy_cols, df1_labels,
+                               df2_labels){
+  mat <- matrix(data=NA, nrow=nrow(df1), ncol=nrow(df2), 
+                dimnames=list(df1[ , df1_labels], df2[ , df2_labels]))
+  df1_x <- df1[ , df1_xy_cols[1]]
+  df1_y <- df1[ , df1_xy_cols[2]]
+  df2_x <- df2[ , df2_xy_cols[1]]
+  df2_y <- df2[ , df2_xy_cols[2]]
+  for (i in 1:ncol(mat)){
+    dist_vect <- c()
+    for (j in 1:nrow(mat)){
+      dist_vect[j] <- sqrt((df1_x[j] - df2_x[i])^2 + (df1_y[j] - df2_y[i])^2) 
+    }
+    mat[ , i] <- dist_vect
+  }
+  mat
+}
+
