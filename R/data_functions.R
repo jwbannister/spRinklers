@@ -55,8 +55,8 @@ assign_points <- function(points_vec, poly_df=sprinkler_polygons){
   return(NA)
 }
 
-assign_areas_df <- function(df_in){
-  df_in$area <- sapply(mapply(c, coordinates(df_in)[ , "x"], 
+assign_areas_spdf <- function(df_in){
+  df_in@data$area <- sapply(mapply(c, coordinates(df_in)[ , "x"], 
                                  coordinates(df_in)[ , "y"], SIMPLIFY=F), 
                           assign_points)
   df_in
